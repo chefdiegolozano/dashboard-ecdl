@@ -16,21 +16,25 @@ import { Regras } from './components/Regras';
 import { Config } from './components/Config';
 import { ToastContainer } from './components/ui/Toast';
 import { useLocalStorage } from './hooks/useLocalStorage';
+import { useSupabaseData } from './hooks/useSupabaseData';
 import { PAUTAS_INICIAIS, KANBAN_INICIAL, TRIGGERS_INICIAIS } from './data/initial';
 import { useAuth } from './context/AuthContext';
 
 export default function App() {
   const { session, loading, canView, canEdit, firstSection, signOut } = useAuth();
 
-  const [posts, setPosts] = useLocalStorage('ecdl_posts', []);
-  const [pautas, setPautas] = useLocalStorage('ecdl_pautas', PAUTAS_INICIAIS);
-  const [matriculas, setMatriculas] = useLocalStorage('ecdl_matriculas', []);
-  const [leads, setLeads] = useLocalStorage('ecdl_leads', []);
-  const [calendarData, setCalendarData] = useLocalStorage('ecdl_calendar', {});
-  const [checklists, setChecklists] = useLocalStorage('ecdl_checklists', []);
-  const [kanban, setKanban] = useLocalStorage('ecdl_kanban', KANBAN_INICIAL);
-  const [triggers, setTriggers] = useLocalStorage('ecdl_triggers', TRIGGERS_INICIAIS);
-  const [templates, setTemplates] = useLocalStorage('ecdl_templates', []);
+  // Dados compartilhados — sincronizados com o Supabase (fallback: localStorage)
+  const [posts, setPosts]           = useSupabaseData('ecdl_posts', []);
+  const [pautas, setPautas]         = useSupabaseData('ecdl_pautas', PAUTAS_INICIAIS);
+  const [matriculas, setMatriculas] = useSupabaseData('ecdl_matriculas', []);
+  const [leads, setLeads]           = useSupabaseData('ecdl_leads', []);
+  const [calendarData, setCalendarData] = useSupabaseData('ecdl_calendar', {});
+  const [checklists, setChecklists] = useSupabaseData('ecdl_checklists', []);
+  const [kanban, setKanban]         = useSupabaseData('ecdl_kanban', KANBAN_INICIAL);
+  const [triggers, setTriggers]     = useSupabaseData('ecdl_triggers', TRIGGERS_INICIAIS);
+  const [templates, setTemplates]   = useSupabaseData('ecdl_templates', []);
+
+  // API key fica apenas local (dado sensível, por usuário)
   const [apiKey, setApiKey] = useLocalStorage('ecdl_anthropic_key', '');
 
   const [active, setActive] = useState('dashboard');
