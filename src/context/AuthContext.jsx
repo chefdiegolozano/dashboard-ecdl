@@ -31,11 +31,24 @@ export function AuthProvider({ children }) {
       .select('*')
       .eq('id', userId)
       .single();
-    if (!error) setProfile(data);
+    if (error) {
+      console.error('[AuthContext] fetchProfile error:', error.message, error.code);
+      // Linha não existe ainda — cria com role padrão
+      if (error.code === 'PGRST116') {
+        const { data: inserted } = await supabase
+          .from('profiles')
+          .insert({ id: userId, nome: '', role: 'editor', cargo: '' })
+          .select()
+          .single();
+        if (inserted) setProfile(inserted);
+      }
+    } else {
+      setProfile(data);
+    }
     setLoading(false);
   }
 
-  const role = profile?.role || null;
+  const role = profile?.role || 'editor';
 
   return (
     <AuthContext.Provider value={{
