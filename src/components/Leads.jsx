@@ -63,7 +63,7 @@ const COLUNAS_FUNIL = [
   { id: 'Perdido',     label: 'PERDIDO',     color: '#FFEBEE', border: '#EF9A9A' },
 ];
 
-export function Leads({ leads, setLeads }) {
+export function Leads({ leads, setLeads, canEdit = true }) {
   const [showForm, setShowForm] = useState(false);
   const [editItem, setEditItem] = useState(null);
   const [deleteId, setDeleteId] = useState(null);
@@ -121,7 +121,7 @@ export function Leads({ leads, setLeads }) {
                 }}>{v === 'kanban' ? 'Funil' : 'Lista'}</button>
               ))}
             </div>
-            <Btn onClick={() => setShowForm(true)}><Plus size={14} />Novo lead</Btn>
+            {canEdit && <Btn onClick={() => setShowForm(true)}><Plus size={14} />Novo lead</Btn>}
           </div>
         }
       />
@@ -174,14 +174,16 @@ export function Leads({ leads, setLeads }) {
                     <p style={{ fontSize: '11px', color: '#888', margin: '0 0 6px' }}>{lead.cursoInteresse}</p>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <span style={{ fontSize: '10px', color: '#999', background: '#F5F5F5', padding: '2px 6px', borderRadius: '3px' }}>{lead.origem}</span>
-                      <div style={{ display: 'flex', gap: '4px' }}>
-                        <button onClick={() => { setEditItem(lead); setShowForm(true); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#C17F24', padding: '2px' }}>
-                          <Edit2 size={11} />
-                        </button>
-                        <button onClick={() => setDeleteId(lead.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#C62828', padding: '2px' }}>
-                          <Trash2 size={11} />
-                        </button>
-                      </div>
+                      {canEdit && (
+                        <div style={{ display: 'flex', gap: '4px' }}>
+                          <button onClick={() => { setEditItem(lead); setShowForm(true); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#C17F24', padding: '2px' }}>
+                            <Edit2 size={11} />
+                          </button>
+                          <button onClick={() => setDeleteId(lead.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#C62828', padding: '2px' }}>
+                            <Trash2 size={11} />
+                          </button>
+                        </div>
+                      )}
                     </div>
                     {lead.telefone && (
                       <a href={`https://wa.me/55${lead.telefone.replace(/\D/g,'')}`} target="_blank" rel="noreferrer"
@@ -234,19 +236,25 @@ export function Leads({ leads, setLeads }) {
                       <td style={{ padding: '10px 16px', color: '#666', fontSize: '12px' }}>{l.origem}</td>
                       <td style={{ padding: '10px 16px', color: '#666', whiteSpace: 'nowrap' }}>{l.dataEntrada}</td>
                       <td style={{ padding: '10px 16px' }}>
-                        <select
-                          value={l.status}
-                          onChange={e => moveStatus(l, e.target.value)}
-                          style={{ fontSize: '12px', padding: '3px 6px', borderRadius: '4px', border: '1px solid #ddd', cursor: 'pointer' }}
-                        >
-                          {STATUS_FUNIL.map(s => <option key={s} value={s}>{s}</option>)}
-                        </select>
+                        {canEdit ? (
+                          <select
+                            value={l.status}
+                            onChange={e => moveStatus(l, e.target.value)}
+                            style={{ fontSize: '12px', padding: '3px 6px', borderRadius: '4px', border: '1px solid #ddd', cursor: 'pointer' }}
+                          >
+                            {STATUS_FUNIL.map(s => <option key={s} value={s}>{s}</option>)}
+                          </select>
+                        ) : (
+                          <span style={{ fontSize: '12px', padding: '3px 8px', borderRadius: '4px', background: '#F5F5F5', color: '#555' }}>{l.status}</span>
+                        )}
                       </td>
                       <td style={{ padding: '10px 16px' }}>
-                        <div style={{ display: 'flex', gap: '6px' }}>
-                          <button onClick={() => { setEditItem(l); setShowForm(true); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#C17F24', padding: '2px' }}><Edit2 size={13} /></button>
-                          <button onClick={() => setDeleteId(l.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#C62828', padding: '2px' }}><Trash2 size={13} /></button>
-                        </div>
+                        {canEdit && (
+                          <div style={{ display: 'flex', gap: '6px' }}>
+                            <button onClick={() => { setEditItem(l); setShowForm(true); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#C17F24', padding: '2px' }}><Edit2 size={13} /></button>
+                            <button onClick={() => setDeleteId(l.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#C62828', padding: '2px' }}><Trash2 size={13} /></button>
+                          </div>
+                        )}
                       </td>
                     </tr>
                   ))}

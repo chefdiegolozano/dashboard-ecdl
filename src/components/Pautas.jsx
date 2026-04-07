@@ -11,7 +11,7 @@ const STATUS_OPTS = ['Disponível', 'Usada', 'Arquivada'];
 
 const emptyForm = { pilar: 'ECDL', titulo: '', formato: 'Reels', status: 'Disponível' };
 
-export function Pautas({ pautas, setPautas }) {
+export function Pautas({ pautas, setPautas, canEdit = true }) {
   const [filterPilar, setFilterPilar] = useState('');
   const [search, setSearch] = useState('');
   const [showForm, setShowForm] = useState(false);
@@ -81,7 +81,7 @@ export function Pautas({ pautas, setPautas }) {
         action={
           <div style={{ display: 'flex', gap: '8px' }}>
             <Btn variant="secondary" onClick={sortear}><Shuffle size={14} />Sortear</Btn>
-            <Btn onClick={() => { setEditPauta(null); setForm(emptyForm); setShowForm(true); }}><Plus size={14} />Nova pauta</Btn>
+            {canEdit && <Btn onClick={() => { setEditPauta(null); setForm(emptyForm); setShowForm(true); }}><Plus size={14} />Nova pauta</Btn>}
           </div>
         }
       />
@@ -137,13 +137,15 @@ export function Pautas({ pautas, setPautas }) {
                     <td style={{ padding: '10px 16px', color: '#666', fontSize: '12px' }}>{p.formato}</td>
                     <td style={{ padding: '10px 16px' }}><Badge tipo="status" valor={p.status} /></td>
                     <td style={{ padding: '10px 16px' }}>
-                      <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
-                        {p.status === 'Disponível' && (
-                          <button onClick={() => marcarUsada(p.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#2E7D32', fontSize: '11px', fontWeight: 600, padding: '2px 6px', borderRadius: '4px', border: '1px solid #2E7D32' }}>Marcar usada</button>
-                        )}
-                        <button onClick={() => openEdit(p)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#C17F24', padding: '2px' }}><Edit2 size={13} /></button>
-                        <button onClick={() => setDeleteId(p.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#C62828', padding: '2px' }}><Trash2 size={13} /></button>
-                      </div>
+                      {canEdit && (
+                        <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                          {p.status === 'Disponível' && (
+                            <button onClick={() => marcarUsada(p.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#2E7D32', fontSize: '11px', fontWeight: 600, padding: '2px 6px', borderRadius: '4px', border: '1px solid #2E7D32' }}>Marcar usada</button>
+                          )}
+                          <button onClick={() => openEdit(p)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#C17F24', padding: '2px' }}><Edit2 size={13} /></button>
+                          <button onClick={() => setDeleteId(p.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#C62828', padding: '2px' }}><Trash2 size={13} /></button>
+                        </div>
+                      )}
                     </td>
                   </tr>
                 ))}

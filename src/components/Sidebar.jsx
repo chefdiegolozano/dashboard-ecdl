@@ -2,24 +2,32 @@ import { useState } from 'react';
 import {
   LayoutDashboard, Calendar, BarChart3, Lightbulb, FileText,
   CheckSquare, Columns3, GitBranch, Zap, BookOpen, Settings,
-  Menu, X, ChevronRight, LogOut, GraduationCap, Users, TrendingUp,
+  Menu, X, ChevronRight, LogOut, GraduationCap, Users,
 } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 const MENU_ITEMS = [
-  { id: 'dashboard',   label: 'Dashboard',    icon: LayoutDashboard, group: 'operacional' },
-  { id: 'matriculas',  label: 'Matrículas',   icon: GraduationCap,   group: 'operacional' },
-  { id: 'leads',       label: 'Leads',        icon: Users,           group: 'operacional' },
-  { id: 'metricas',    label: 'Métricas',     icon: BarChart3,       group: 'operacional' },
-  { id: 'calendario',  label: 'Calendário',   icon: Calendar,        group: 'operacional' },
-  { id: 'pautas',      label: 'Pautas',       icon: Lightbulb,       group: 'operacional' },
-  { id: 'kanban',      label: 'Kanban',       icon: Columns3,        group: 'operacional' },
-  { id: 'checklist',   label: 'Checklist',    icon: CheckSquare,     group: 'operacional' },
-  { id: 'workflow',    label: 'Workflow',     icon: GitBranch,       group: 'referencia' },
-  { id: 'templates',   label: 'Templates',    icon: FileText,        group: 'referencia' },
-  { id: 'automacao',   label: 'Automação',    icon: Zap,             group: 'referencia' },
-  { id: 'regras',      label: 'Regras',       icon: BookOpen,        group: 'referencia' },
-  { id: 'config',      label: 'Config',       icon: Settings,        group: 'referencia' },
+  { id: 'dashboard',  label: 'Dashboard',   icon: LayoutDashboard, group: 'operacional' },
+  { id: 'matriculas', label: 'Matrículas',  icon: GraduationCap,   group: 'operacional' },
+  { id: 'leads',      label: 'Leads',       icon: Users,           group: 'operacional' },
+  { id: 'metricas',   label: 'Métricas',    icon: BarChart3,       group: 'operacional' },
+  { id: 'calendario', label: 'Calendário',  icon: Calendar,        group: 'operacional' },
+  { id: 'pautas',     label: 'Pautas',      icon: Lightbulb,       group: 'operacional' },
+  { id: 'kanban',     label: 'Kanban',      icon: Columns3,        group: 'operacional' },
+  { id: 'checklist',  label: 'Checklist',   icon: CheckSquare,     group: 'operacional' },
+  { id: 'workflow',   label: 'Workflow',    icon: GitBranch,       group: 'referencia' },
+  { id: 'templates',  label: 'Templates',   icon: FileText,        group: 'referencia' },
+  { id: 'automacao',  label: 'Automação',   icon: Zap,             group: 'referencia' },
+  { id: 'regras',     label: 'Regras',      icon: BookOpen,        group: 'referencia' },
+  { id: 'config',     label: 'Config',      icon: Settings,        group: 'referencia' },
 ];
+
+const ROLE_LABELS = {
+  gestor: 'Gestor',
+  editor: 'Editor',
+  analista: 'Analista',
+  video_maker: 'Video Maker',
+};
 
 const ACCENT = '#C17F24';
 
@@ -50,6 +58,11 @@ function NavItem({ item, active, onNavigate }) {
 
 export function Sidebar({ active, onNavigate, onLogout }) {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { role, profile, canView } = useAuth();
+
+  const visibleItems = MENU_ITEMS.filter(m => canView(m.id));
+  const operacional = visibleItems.filter(m => m.group === 'operacional');
+  const referencia = visibleItems.filter(m => m.group === 'referencia');
 
   const SidebarContent = () => (
     <div style={{ height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
@@ -70,29 +83,55 @@ export function Sidebar({ active, onNavigate, onLogout }) {
 
       {/* Nav */}
       <nav style={{ flex: 1, overflowY: 'auto', padding: '12px 0' }}>
-        <div style={{ padding: '4px 20px 8px', color: `rgba(193,127,36,0.5)`, fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px' }}>
-          Operacional
-        </div>
-        {MENU_ITEMS.filter(m => m.group === 'operacional').map(item => (
-          <NavItem key={item.id} item={item} active={active} onNavigate={(id) => { onNavigate(id); setMobileOpen(false); }} />
-        ))}
+        {operacional.length > 0 && (
+          <>
+            <div style={{ padding: '4px 20px 8px', color: `rgba(193,127,36,0.5)`, fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px' }}>
+              Operacional
+            </div>
+            {operacional.map(item => (
+              <NavItem key={item.id} item={item} active={active} onNavigate={(id) => { onNavigate(id); setMobileOpen(false); }} />
+            ))}
+          </>
+        )}
 
-        <div style={{ margin: '12px 20px', borderTop: `1px solid rgba(193,127,36,0.15)` }} />
-
-        <div style={{ padding: '4px 20px 8px', color: `rgba(193,127,36,0.5)`, fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px' }}>
-          Referência
-        </div>
-        {MENU_ITEMS.filter(m => m.group === 'referencia').map(item => (
-          <NavItem key={item.id} item={item} active={active} onNavigate={(id) => { onNavigate(id); setMobileOpen(false); }} />
-        ))}
+        {referencia.length > 0 && (
+          <>
+            <div style={{ margin: '12px 20px', borderTop: `1px solid rgba(193,127,36,0.15)` }} />
+            <div style={{ padding: '4px 20px 8px', color: `rgba(193,127,36,0.5)`, fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px' }}>
+              Referência
+            </div>
+            {referencia.map(item => (
+              <NavItem key={item.id} item={item} active={active} onNavigate={(id) => { onNavigate(id); setMobileOpen(false); }} />
+            ))}
+          </>
+        )}
       </nav>
 
-      {/* Footer */}
+      {/* Footer: usuário + sair */}
       <div style={{ borderTop: `1px solid rgba(193,127,36,0.2)` }}>
+        {profile && (
+          <div style={{ padding: '12px 20px 4px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div style={{
+              width: '28px', height: '28px', borderRadius: '50%', background: 'rgba(193,127,36,0.2)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: '12px', fontWeight: 700, color: ACCENT, flexShrink: 0,
+            }}>
+              {(profile.name || profile.email || '?')[0].toUpperCase()}
+            </div>
+            <div style={{ overflow: 'hidden' }}>
+              <div style={{ fontSize: '12px', fontWeight: 600, color: 'rgba(251,245,238,0.8)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                {profile.name || profile.email}
+              </div>
+              <div style={{ fontSize: '10px', color: ACCENT, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                {ROLE_LABELS[role] || role}
+              </div>
+            </div>
+          </div>
+        )}
         <button
           onClick={onLogout}
           style={{
-            width: '100%', padding: '12px 20px', border: 'none', cursor: 'pointer',
+            width: '100%', padding: '10px 20px', border: 'none', cursor: 'pointer',
             background: 'transparent', color: 'rgba(251,245,238,0.4)',
             display: 'flex', alignItems: 'center', gap: '10px',
             fontSize: '13px', fontWeight: 400, transition: 'all 0.15s',
@@ -103,8 +142,8 @@ export function Sidebar({ active, onNavigate, onLogout }) {
           <LogOut size={15} />
           Sair
         </button>
-        <div style={{ padding: '8px 20px 14px', fontSize: '11px', color: `rgba(193,127,36,0.3)` }}>
-          v1.0 — Painel ECDL
+        <div style={{ padding: '4px 20px 14px', fontSize: '11px', color: `rgba(193,127,36,0.3)` }}>
+          v2.0 — Painel ECDL
         </div>
       </div>
     </div>

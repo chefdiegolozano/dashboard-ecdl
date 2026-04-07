@@ -30,25 +30,28 @@ function timeDiff(isoDate) {
   return `${days} dias`;
 }
 
-function KanbanCard({ card, colId, onEdit, onDelete, onDragStart, onDragEnd }) {
+function KanbanCard({ card, colId, onEdit, onDelete, onDragStart, onDragEnd, canEdit }) {
   return (
     <div
-      draggable
-      onDragStart={e => { e.dataTransfer.setData('cardId', card.id); e.dataTransfer.setData('fromCol', colId); onDragStart(); }}
-      onDragEnd={onDragEnd}
+      draggable={canEdit}
+      onDragStart={canEdit ? (e => { e.dataTransfer.setData('cardId', card.id); e.dataTransfer.setData('fromCol', colId); onDragStart(); }) : undefined}
+      onDragEnd={canEdit ? onDragEnd : undefined}
       style={{
         background: '#fff', borderRadius: '8px', padding: '12px',
-        border: '1px solid #F0E4D0', cursor: 'grab', marginBottom: '8px',
+        border: '1px solid #F0E4D0', cursor: canEdit ? 'grab' : 'default', marginBottom: '8px',
         boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
       }}
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '6px', marginBottom: '6px' }}>
         <Badge tipo="pilar" valor={card.pilar} />
-        <button onClick={() => onDelete(card.id, colId)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#ccc', padding: 0, flexShrink: 0 }}>
-          <X size={13} />
-        </button>
+        {canEdit && (
+          <button onClick={() => onDelete(card.id, colId)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#ccc', padding: 0, flexShrink: 0 }}>
+            <X size={13} />
+          </button>
+        )}
       </div>
-      <p style={{ fontWeight: 600, fontSize: '13px', color: '#1C0F05', margin: '0 0 6px', lineHeight: 1.4, cursor: 'pointer' }} onClick={() => onEdit(card, colId)}>
+      <p style={{ fontWeight: 600, fontSize: '13px', color: '#1C0F05', margin: '0 0 6px', lineHeight: 1.4, cursor: canEdit ? 'pointer' : 'default' }}
+        onClick={canEdit ? () => onEdit(card, colId) : undefined}>
         {card.titulo || <span style={{ color: '#999', fontStyle: 'italic' }}>Sem título</span>}
       </p>
       <div style={{ fontSize: '11px', color: '#999', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -60,14 +63,16 @@ function KanbanCard({ card, colId, onEdit, onDelete, onDragStart, onDragEnd }) {
       {card.dataPrevista && (
         <div style={{ fontSize: '10px', color: '#C17F24', marginTop: '4px' }}>Prev: {card.dataPrevista}</div>
       )}
-      <button onClick={() => onEdit(card, colId)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#C17F24', padding: '2px 0', fontSize: '11px', display: 'flex', alignItems: 'center', gap: '3px', marginTop: '4px' }}>
-        <Edit2 size={10} />Editar
-      </button>
+      {canEdit && (
+        <button onClick={() => onEdit(card, colId)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#C17F24', padding: '2px 0', fontSize: '11px', display: 'flex', alignItems: 'center', gap: '3px', marginTop: '4px' }}>
+          <Edit2 size={10} />Editar
+        </button>
+      )}
     </div>
   );
 }
 
-export function Kanban({ kanban, setKanban }) {
+export function Kanban({ kanban, setKanban, canEdit = true }) {
   const [dragging, setDragging] = useState(false);
   const [editCard, setEditCard] = useState(null);
   const [editCol, setEditCol] = useState(null);
@@ -155,24 +160,29 @@ export function Kanban({ kanban, setKanban }) {
                 <span style={{ fontSize: '11px', fontWeight: 700, color: '#555', letterSpacing: '0.5px' }}>{col.label}</span>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                   <span style={{ fontSize: '13px', fontWeight: 700, color: '#555' }}>{cards.length}</span>
-                  <button onClick={() => addCard(col.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#C17F24', padding: '2px' }}>
-                    <Plus size={14} />
-                  </button>
+                  {canEdit && (
+                    <button onClick={() => addCard(col.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#C17F24', padding: '2px' }}>
+                      <Plus size={14} />
+                    </button>
+                  )}
                 </div>
               </div>
               {cards.map(card => (
                 <KanbanCard key={card.id} card={card} colId={col.id}
                   onEdit={openEdit} onDelete={handleDelete}
                   onDragStart={() => setDragging(true)} onDragEnd={() => setDragging(false)}
+                  canEdit={canEdit}
                 />
               ))}
-              <button onClick={() => addCard(col.id)} style={{
-                width: '100%', padding: '8px', border: `1px dashed ${col.border}`,
-                background: 'transparent', borderRadius: '6px', cursor: 'pointer',
-                fontSize: '12px', color: '#999', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px',
-              }}>
-                <Plus size={12} />Adicionar
-              </button>
+              {canEdit && (
+                <button onClick={() => addCard(col.id)} style={{
+                  width: '100%', padding: '8px', border: `1px dashed ${col.border}`,
+                  background: 'transparent', borderRadius: '6px', cursor: 'pointer',
+                  fontSize: '12px', color: '#999', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px',
+                }}>
+                  <Plus size={12} />Adicionar
+                </button>
+              )}
             </div>
           );
         })}

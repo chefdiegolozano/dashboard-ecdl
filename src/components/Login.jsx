@@ -1,29 +1,23 @@
 import { useState } from 'react';
 import { Eye, EyeOff, LogIn } from 'lucide-react';
+import { supabase } from '../lib/supabase';
 
-const VALID_USER = import.meta.env.VITE_LOGIN_USER || 'ecdl';
-const VALID_PASS = import.meta.env.VITE_LOGIN_PASS || 'escola2026';
-
-export function Login({ onLogin }) {
-  const [user, setUser] = useState('');
+export function Login() {
+  const [email, setEmail] = useState('');
   const [pass, setPass] = useState('');
   const [showPass, setShowPass] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setLoading(true);
-    setTimeout(() => {
-      if (user.trim().toLowerCase() === VALID_USER && pass === VALID_PASS) {
-        sessionStorage.setItem('ecdl_session', 'authenticated');
-        onLogin();
-      } else {
-        setError('Usuário ou senha incorretos.');
-        setLoading(false);
-      }
-    }, 400);
+    const { error: err } = await supabase.auth.signInWithPassword({ email: email.trim(), password: pass });
+    if (err) {
+      setError('E-mail ou senha incorretos.');
+      setLoading(false);
+    }
   };
 
   return (
@@ -61,10 +55,10 @@ export function Login({ onLogin }) {
             <label style={{
               display: 'block', fontSize: '11px', fontWeight: 700,
               color: 'rgba(193,127,36,0.7)', textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: '6px',
-            }}>Usuário</label>
+            }}>E-mail</label>
             <input
-              type="text" value={user} onChange={e => setUser(e.target.value)}
-              placeholder="seu usuário" autoComplete="username" autoFocus required
+              type="email" value={email} onChange={e => setEmail(e.target.value)}
+              placeholder="seu@email.com" autoComplete="email" autoFocus required
               style={{
                 width: '100%', padding: '11px 14px', borderRadius: '8px',
                 border: `1px solid ${error ? 'rgba(198,40,40,0.5)' : 'rgba(193,127,36,0.25)'}`,

@@ -73,7 +73,7 @@ function PostForm({ initial, onSave, onCancel }) {
   );
 }
 
-export function Metricas({ posts, setPosts }) {
+export function Metricas({ posts, setPosts, canEdit = true }) {
   const [showForm, setShowForm] = useState(false);
   const [editPost, setEditPost] = useState(null);
   const [deleteId, setDeleteId] = useState(null);
@@ -127,7 +127,7 @@ export function Metricas({ posts, setPosts }) {
       <SectionHeader
         title="Métricas de Conteúdo"
         subtitle={`${posts.length} posts registrados`}
-        action={<Btn onClick={() => setShowForm(true)}><Plus size={14} />Registrar post</Btn>}
+        action={canEdit && <Btn onClick={() => setShowForm(true)}><Plus size={14} />Registrar post</Btn>}
       />
 
       {/* Filtros */}
@@ -187,10 +187,12 @@ export function Metricas({ posts, setPosts }) {
                       <td style={{ padding: '10px 16px', fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>{eng.toFixed(2)}%</td>
                       <td style={{ padding: '10px 16px' }}><Badge tipo="classificacao" valor={classif} /></td>
                       <td style={{ padding: '10px 16px' }}>
-                        <div style={{ display: 'flex', gap: '6px' }}>
-                          <button onClick={() => { setEditPost(p); setShowForm(true); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#C17F24', padding: '2px' }}><Edit2 size={13} /></button>
-                          <button onClick={() => setDeleteId(p.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#C62828', padding: '2px' }}><Trash2 size={13} /></button>
-                        </div>
+                        {canEdit && (
+                          <div style={{ display: 'flex', gap: '6px' }}>
+                            <button onClick={() => { setEditPost(p); setShowForm(true); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#C17F24', padding: '2px' }}><Edit2 size={13} /></button>
+                            <button onClick={() => setDeleteId(p.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#C62828', padding: '2px' }}><Trash2 size={13} /></button>
+                          </div>
+                        )}
                       </td>
                     </tr>
                   );

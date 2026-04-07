@@ -58,7 +58,7 @@ A diferença está em [DETALHE TÉCNICO ESPECÍFICO].
 
 const emptyForm = { nome: '', categoria: 'Copy de Post', pilar: 'ECDL', corpo: '' };
 
-export function Templates({ templates, setTemplates }) {
+export function Templates({ templates, setTemplates, canEdit = true }) {
   const [filterCategoria, setFilterCategoria] = useState('');
   const [showForm, setShowForm] = useState(false);
   const [editItem, setEditItem] = useState(null);
@@ -107,7 +107,7 @@ export function Templates({ templates, setTemplates }) {
       <SectionHeader
         title="Templates"
         subtitle={`${allTemplates.length} templates disponíveis`}
-        action={<Btn onClick={() => { setEditItem(null); setForm(emptyForm); setShowForm(true); }}><Plus size={14} />Novo template</Btn>}
+        action={canEdit && <Btn onClick={() => { setEditItem(null); setForm(emptyForm); setShowForm(true); }}><Plus size={14} />Novo template</Btn>}
       />
 
       {/* Filtro */}
@@ -137,7 +137,7 @@ export function Templates({ templates, setTemplates }) {
                   <button onClick={() => copiar(tpl.corpo)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#C17F24', padding: '4px' }} title="Copiar">
                     <Copy size={14} />
                   </button>
-                  {!isPadrao && (
+                  {canEdit && !isPadrao && (
                     <>
                       <button onClick={() => openEdit(tpl)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#C17F24', padding: '4px' }}><Edit2 size={14} /></button>
                       <button onClick={() => setDeleteId(tpl.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#C62828', padding: '4px' }}><Trash2 size={14} /></button>

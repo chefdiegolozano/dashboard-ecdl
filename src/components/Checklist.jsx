@@ -45,7 +45,7 @@ const TEMPLATES_CHECKLIST = [
   },
 ];
 
-export function Checklist({ checklists, setChecklists }) {
+export function Checklist({ checklists, setChecklists, canEdit = true }) {
   const [showNew, setShowNew] = useState(false);
   const [novoNome, setNovoNome] = useState('');
   const [novoTemplate, setNovoTemplate] = useState('');
@@ -115,7 +115,7 @@ export function Checklist({ checklists, setChecklists }) {
       <SectionHeader
         title="Checklists"
         subtitle={`${checklists.length} listas`}
-        action={<Btn onClick={() => setShowNew(true)}><Plus size={14} />Novo checklist</Btn>}
+        action={canEdit && <Btn onClick={() => setShowNew(true)}><Plus size={14} />Novo checklist</Btn>}
       />
 
       <div style={{ display: 'grid', gridTemplateColumns: '260px 1fr', gap: '20px' }}>
@@ -163,10 +163,12 @@ export function Checklist({ checklists, setChecklists }) {
             <Card style={{ padding: '24px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
                 <h3 style={{ fontFamily: 'Georgia,serif', color: '#C17F24', fontSize: '18px', margin: 0 }}>{active.nome}</h3>
-                <div style={{ display: 'flex', gap: '8px' }}>
-                  <Btn variant="ghost" size="sm" onClick={() => resetChecklist(active.id)}><RotateCcw size={12} />Reset</Btn>
-                  <Btn variant="danger" size="sm" onClick={() => deleteChecklist(active.id)}><Trash2 size={12} />Excluir</Btn>
-                </div>
+                {canEdit && (
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <Btn variant="ghost" size="sm" onClick={() => resetChecklist(active.id)}><RotateCcw size={12} />Reset</Btn>
+                    <Btn variant="danger" size="sm" onClick={() => deleteChecklist(active.id)}><Trash2 size={12} />Excluir</Btn>
+                  </div>
+                )}
               </div>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '20px' }}>
@@ -185,23 +187,27 @@ export function Checklist({ checklists, setChecklists }) {
                     <span style={{ flex: 1, fontSize: '14px', color: item.feito ? '#2E7D32' : '#333', textDecoration: item.feito ? 'line-through' : 'none', lineHeight: 1.4 }}>
                       {item.texto}
                     </span>
-                    <button onClick={() => removeItem(active.id, item.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#ccc', padding: 0 }}>
-                      <Trash2 size={13} />
-                    </button>
+                    {canEdit && (
+                      <button onClick={() => removeItem(active.id, item.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#ccc', padding: 0 }}>
+                        <Trash2 size={13} />
+                      </button>
+                    )}
                   </div>
                 ))}
               </div>
 
-              <div style={{ display: 'flex', gap: '8px' }}>
-                <input
-                  value={novoItem}
-                  onChange={e => setNovoItem(e.target.value)}
-                  onKeyDown={e => e.key === 'Enter' && addItem(active.id)}
-                  placeholder="Novo item..."
-                  style={{ flex: 1, padding: '8px 12px', borderRadius: '6px', border: '1px solid #ddd', fontSize: '14px', fontFamily: 'inherit' }}
-                />
-                <Btn onClick={() => addItem(active.id)}><Plus size={14} />Adicionar</Btn>
-              </div>
+              {canEdit && (
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <input
+                    value={novoItem}
+                    onChange={e => setNovoItem(e.target.value)}
+                    onKeyDown={e => e.key === 'Enter' && addItem(active.id)}
+                    placeholder="Novo item..."
+                    style={{ flex: 1, padding: '8px 12px', borderRadius: '6px', border: '1px solid #ddd', fontSize: '14px', fontFamily: 'inherit' }}
+                  />
+                  <Btn onClick={() => addItem(active.id)}><Plus size={14} />Adicionar</Btn>
+                </div>
+              )}
             </Card>
           )}
         </div>

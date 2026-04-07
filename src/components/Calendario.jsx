@@ -34,7 +34,7 @@ const DEFAULT_DAY = () => ({
   status: 'Pauta', pauta: '', copy: '', notas: '', publicado: false,
 });
 
-export function Calendario({ calendarData, setCalendarData }) {
+export function Calendario({ calendarData, setCalendarData, canEdit = true }) {
   const [weekOffset, setWeekOffset] = useState(0);
   const [expandedDay, setExpandedDay] = useState(null);
   const weekDays = getWeekDates(weekOffset);
@@ -107,16 +107,30 @@ export function Calendario({ calendarData, setCalendarData }) {
               {isExpanded && (
                 <Card style={{ padding: '12px', position: 'relative' }}>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                    <Select label="Pilar" value={data.pilar} onChange={e => updateDay(day, { pilar: e.target.value })} options={PILARES} />
-                    <Select label="Formato" value={data.formato} onChange={e => updateDay(day, { formato: e.target.value })} options={FORMATOS} />
-                    <Select label="Status" value={data.status} onChange={e => updateDay(day, { status: e.target.value })} options={STATUS_OPTS} />
-                    <Input label="Horário" value={data.horario} onChange={e => updateDay(day, { horario: e.target.value })} placeholder="19h" />
-                    <Input label="Pauta" type="textarea" value={data.pauta} onChange={e => updateDay(day, { pauta: e.target.value })} placeholder="Ideia ou pauta..." rows={2} />
-                    <Input label="Notas" type="textarea" value={data.notas} onChange={e => updateDay(day, { notas: e.target.value })} placeholder="Observações..." rows={2} />
-                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', cursor: 'pointer' }}>
-                      <input type="checkbox" checked={!!data.publicado} onChange={e => updateDay(day, { publicado: e.target.checked })} />
-                      Publicado
-                    </label>
+                    {canEdit ? (
+                      <>
+                        <Select label="Pilar" value={data.pilar} onChange={e => updateDay(day, { pilar: e.target.value })} options={PILARES} />
+                        <Select label="Formato" value={data.formato} onChange={e => updateDay(day, { formato: e.target.value })} options={FORMATOS} />
+                        <Select label="Status" value={data.status} onChange={e => updateDay(day, { status: e.target.value })} options={STATUS_OPTS} />
+                        <Input label="Horário" value={data.horario} onChange={e => updateDay(day, { horario: e.target.value })} placeholder="19h" />
+                        <Input label="Pauta" type="textarea" value={data.pauta} onChange={e => updateDay(day, { pauta: e.target.value })} placeholder="Ideia ou pauta..." rows={2} />
+                        <Input label="Notas" type="textarea" value={data.notas} onChange={e => updateDay(day, { notas: e.target.value })} placeholder="Observações..." rows={2} />
+                        <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', cursor: 'pointer' }}>
+                          <input type="checkbox" checked={!!data.publicado} onChange={e => updateDay(day, { publicado: e.target.checked })} />
+                          Publicado
+                        </label>
+                      </>
+                    ) : (
+                      <div style={{ fontSize: '13px', color: '#555', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                        <div><strong>Pilar:</strong> {data.pilar}</div>
+                        <div><strong>Formato:</strong> {data.formato}</div>
+                        <div><strong>Status:</strong> {data.status}</div>
+                        <div><strong>Horário:</strong> {data.horario}</div>
+                        {data.pauta && <div><strong>Pauta:</strong> {data.pauta}</div>}
+                        {data.notas && <div><strong>Notas:</strong> {data.notas}</div>}
+                        {data.publicado && <div style={{ color: '#2E7D32', fontWeight: 600 }}>✓ Publicado</div>}
+                      </div>
+                    )}
                   </div>
                 </Card>
               )}

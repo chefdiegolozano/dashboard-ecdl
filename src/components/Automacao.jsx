@@ -14,7 +14,7 @@ const emptyForm = {
   status: 'Ativo',
 };
 
-export function Automacao({ triggers, setTriggers }) {
+export function Automacao({ triggers, setTriggers, canEdit = true }) {
   const [showForm, setShowForm] = useState(false);
   const [editItem, setEditItem] = useState(null);
   const [deleteId, setDeleteId] = useState(null);
@@ -61,7 +61,7 @@ export function Automacao({ triggers, setTriggers }) {
       <SectionHeader
         title="Automação de Mensagens"
         subtitle={`${ativos} triggers ativos · ManyChat / WhatsApp`}
-        action={<Btn onClick={() => { setEditItem(null); setForm(emptyForm); setShowForm(true); }}><Plus size={14} />Novo trigger</Btn>}
+        action={canEdit && <Btn onClick={() => { setEditItem(null); setForm(emptyForm); setShowForm(true); }}><Plus size={14} />Novo trigger</Btn>}
       />
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(360px, 1fr))', gap: '16px' }}>
@@ -80,10 +80,12 @@ export function Automacao({ triggers, setTriggers }) {
                   <div style={{ fontSize: '11px', color: '#888', marginTop: '1px' }}>{trigger.tipo} · Atualizado {trigger.ultimaAtualizacao}</div>
                 </div>
               </div>
-              <div style={{ display: 'flex', gap: '6px' }}>
-                <button onClick={() => openEdit(trigger)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#C17F24', padding: '4px' }}><Edit2 size={13} /></button>
-                <button onClick={() => setDeleteId(trigger.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#C62828', padding: '4px' }}><Trash2 size={13} /></button>
-              </div>
+              {canEdit && (
+                <div style={{ display: 'flex', gap: '6px' }}>
+                  <button onClick={() => openEdit(trigger)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#C17F24', padding: '4px' }}><Edit2 size={13} /></button>
+                  <button onClick={() => setDeleteId(trigger.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#C62828', padding: '4px' }}><Trash2 size={13} /></button>
+                </div>
+              )}
             </div>
 
             <div style={{ background: '#FDFAF6', borderRadius: '6px', padding: '12px', border: '1px solid #EAD9C0', marginBottom: '12px' }}>
@@ -96,8 +98,8 @@ export function Automacao({ triggers, setTriggers }) {
                 background: trigger.tipo === 'DM' ? '#E3F2FD' : trigger.tipo === 'WhatsApp' ? '#E8F5E9' : '#FFF8E1',
                 color: trigger.tipo === 'DM' ? '#1565C0' : trigger.tipo === 'WhatsApp' ? '#2E7D32' : '#F57F17',
               }}>{trigger.tipo}</span>
-              <button onClick={() => toggleStatus(trigger.id)} style={{
-                padding: '4px 12px', borderRadius: '12px', border: 'none', cursor: 'pointer', fontSize: '12px', fontWeight: 600,
+              <button onClick={canEdit ? () => toggleStatus(trigger.id) : undefined} style={{
+                padding: '4px 12px', borderRadius: '12px', border: 'none', cursor: canEdit ? 'pointer' : 'default', fontSize: '12px', fontWeight: 600,
                 background: trigger.status === 'Ativo' ? '#E8F5E9' : '#F5F5F5',
                 color: trigger.status === 'Ativo' ? '#2E7D32' : '#999',
               }}>

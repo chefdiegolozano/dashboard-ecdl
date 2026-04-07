@@ -53,7 +53,7 @@ function MatriculaForm({ initial, onSave, onCancel }) {
   );
 }
 
-export function Matriculas({ matriculas, setMatriculas }) {
+export function Matriculas({ matriculas, setMatriculas, canEdit = true }) {
   const [showForm, setShowForm] = useState(false);
   const [editItem, setEditItem] = useState(null);
   const [deleteId, setDeleteId] = useState(null);
@@ -92,7 +92,7 @@ export function Matriculas({ matriculas, setMatriculas }) {
       <SectionHeader
         title="Matrículas"
         subtitle={`${ativas} alunos ativos · ${matriculas.length} total`}
-        action={<Btn onClick={() => setShowForm(true)}><Plus size={14} />Nova matrícula</Btn>}
+        action={canEdit && <Btn onClick={() => setShowForm(true)}><Plus size={14} />Nova matrícula</Btn>}
       />
 
       {/* Resumo */}
@@ -156,14 +156,16 @@ export function Matriculas({ matriculas, setMatriculas }) {
                     <td style={{ padding: '10px 16px', color: '#666', fontSize: '12px' }}>{m.formaPgto}</td>
                     <td style={{ padding: '10px 16px' }}><Badge tipo="status" valor={m.status} /></td>
                     <td style={{ padding: '10px 16px' }}>
-                      <div style={{ display: 'flex', gap: '6px' }}>
-                        <button onClick={() => { setEditItem(m); setShowForm(true); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#C17F24', padding: '2px' }}>
-                          <Edit2 size={13} />
-                        </button>
-                        <button onClick={() => setDeleteId(m.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#C62828', padding: '2px' }}>
-                          <Trash2 size={13} />
-                        </button>
-                      </div>
+                      {canEdit && (
+                        <div style={{ display: 'flex', gap: '6px' }}>
+                          <button onClick={() => { setEditItem(m); setShowForm(true); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#C17F24', padding: '2px' }}>
+                            <Edit2 size={13} />
+                          </button>
+                          <button onClick={() => setDeleteId(m.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#C62828', padding: '2px' }}>
+                            <Trash2 size={13} />
+                          </button>
+                        </div>
+                      )}
                     </td>
                   </tr>
                 ))}
