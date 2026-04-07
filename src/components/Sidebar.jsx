@@ -116,14 +116,14 @@ export function Sidebar({ active, onNavigate, onLogout }) {
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               fontSize: '12px', fontWeight: 700, color: ACCENT, flexShrink: 0,
             }}>
-              {(profile.name || profile.email || '?')[0].toUpperCase()}
+              {(profile.nome || profile.email || '?')[0].toUpperCase()}
             </div>
             <div style={{ overflow: 'hidden' }}>
               <div style={{ fontSize: '12px', fontWeight: 600, color: 'rgba(251,245,238,0.8)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                {profile.name || profile.email}
+                {profile.nome || profile.email}
               </div>
               <div style={{ fontSize: '10px', color: ACCENT, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                {ROLE_LABELS[role] || role}
+                {profile.cargo || ROLE_LABELS[role] || role}
               </div>
             </div>
           </div>
