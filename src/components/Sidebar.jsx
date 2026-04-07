@@ -63,7 +63,7 @@ function NavItem({ item, active, onNavigate }) {
 export function Sidebar({ active, onNavigate, onLogout }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [claiming, setClaiming] = useState(false);
-  const { role, profile, canView, claimGestor } = useAuth();
+  const { role, profile, session, canView, claimGestor } = useAuth();
 
   async function handleClaimGestor() {
     setClaiming(true);
@@ -140,7 +140,7 @@ export function Sidebar({ active, onNavigate, onLogout }) {
             </div>
           </div>
         )}
-        {role !== 'gestor' && (
+        {role !== 'gestor' && session?.user?.email === 'diego@levena.com.br' && (
           <button
             onClick={handleClaimGestor}
             disabled={claiming}

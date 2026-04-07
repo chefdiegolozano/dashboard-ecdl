@@ -48,19 +48,33 @@ export function AuthProvider({ children }) {
     setLoading(false);
   }
 
-  const role = profile?.role || 'editor';
+  // Role: prioridade → profiles.role → user_metadata.role → 'editor'
+  const metaRole = session?.user?.user_metadata?.role;
+  const role = profile?.role || metaRole || 'editor';
+
+  // Só diego@levena.com.br pode usar este caminho
+  const OWNER_EMAIL = 'diego@levena.com.br';
 
   async function claimGestor() {
-    if (!profile?.id) return false;
-    const { error } = await supabase
-      .from('profiles')
-      .update({ role: 'gestor' })
-      .eq('id', profile.id);
-    if (!error) {
-      setProfile(p => ({ ...p, role: 'gestor' }));
-      return true;
+    const email = session?.user?.email;
+    if (email !== OWNER_EMAIL) return false;
+
+    // 1. Grava no user_metadata (não depende de RLS)
+    const { error: metaErr } = await supabase.auth.updateUser({
+      data: { role: 'gestor' },
+    });
+    if (metaErr) {
+      console.error('[claimGestor] updateUser error:', metaErr.message);
+      return false;
     }
-    return false;
+
+    // 2. Tenta atualizar a tabela profiles (pode falhar sem linha — tudo bem)
+    if (profile?.id) {
+      await supabase.from('profiles').update({ role: 'gestor' }).eq('id', profile.id);
+    }
+
+    setProfile(p => ({ ...(p || {}), id: session.user.id, email, role: 'gestor' }));
+    return true;
   }
 
   return (
