@@ -23,6 +23,16 @@ export default function App() {
   const [authenticated, setAuthenticated] = useState(
     () => sessionStorage.getItem('ecdl_session') === 'authenticated'
   );
+  const [posts, setPosts] = useLocalStorage('ecdl_posts', []);
+  const [pautas, setPautas] = useLocalStorage('ecdl_pautas', PAUTAS_INICIAIS);
+  const [matriculas, setMatriculas] = useLocalStorage('ecdl_matriculas', []);
+  const [leads, setLeads] = useLocalStorage('ecdl_leads', []);
+  const [calendarData, setCalendarData] = useLocalStorage('ecdl_calendar', {});
+  const [checklists, setChecklists] = useLocalStorage('ecdl_checklists', []);
+  const [kanban, setKanban] = useLocalStorage('ecdl_kanban', KANBAN_INICIAL);
+  const [triggers, setTriggers] = useLocalStorage('ecdl_triggers', TRIGGERS_INICIAIS);
+  const [templates, setTemplates] = useLocalStorage('ecdl_templates', []);
+  const [apiKey, setApiKey] = useLocalStorage('ecdl_anthropic_key', '');
 
   const handleLogout = () => {
     sessionStorage.removeItem('ecdl_session');
@@ -32,27 +42,6 @@ export default function App() {
   if (!authenticated) {
     return <Login onLogin={() => setAuthenticated(true)} />;
   }
-
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  const [posts, setPosts] = useLocalStorage('ecdl_posts', []);
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  const [pautas, setPautas] = useLocalStorage('ecdl_pautas', PAUTAS_INICIAIS);
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  const [matriculas, setMatriculas] = useLocalStorage('ecdl_matriculas', []);
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  const [leads, setLeads] = useLocalStorage('ecdl_leads', []);
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  const [calendarData, setCalendarData] = useLocalStorage('ecdl_calendar', {});
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  const [checklists, setChecklists] = useLocalStorage('ecdl_checklists', []);
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  const [kanban, setKanban] = useLocalStorage('ecdl_kanban', KANBAN_INICIAL);
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  const [triggers, setTriggers] = useLocalStorage('ecdl_triggers', TRIGGERS_INICIAIS);
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  const [templates, setTemplates] = useLocalStorage('ecdl_templates', []);
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  const [apiKey, setApiKey] = useLocalStorage('ecdl_anthropic_key', '');
 
   const handleImport = (data) => {
     if (data.posts) setPosts(data.posts);
