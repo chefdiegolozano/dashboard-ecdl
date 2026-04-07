@@ -2,7 +2,8 @@ import { useState } from 'react';
 import {
   LayoutDashboard, Calendar, BarChart3, Lightbulb, FileText,
   CheckSquare, Columns3, GitBranch, Zap, BookOpen, Settings,
-  Menu, X, ChevronRight, LogOut, GraduationCap, Users,
+  Menu, X, ChevronRight, LogOut, GraduationCap, Users, Activity,
+  ClipboardList, Megaphone,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
@@ -11,10 +12,13 @@ const MENU_ITEMS = [
   { id: 'matriculas', label: 'Matrículas',  icon: GraduationCap,   group: 'operacional' },
   { id: 'leads',      label: 'Leads',       icon: Users,           group: 'operacional' },
   { id: 'metricas',   label: 'Métricas',    icon: BarChart3,       group: 'operacional' },
+  { id: 'anuncios',   label: 'Anúncios',    icon: Megaphone,       group: 'operacional' },
   { id: 'calendario', label: 'Calendário',  icon: Calendar,        group: 'operacional' },
   { id: 'pautas',     label: 'Pautas',      icon: Lightbulb,       group: 'operacional' },
   { id: 'kanban',     label: 'Kanban',      icon: Columns3,        group: 'operacional' },
   { id: 'checklist',  label: 'Checklist',   icon: CheckSquare,     group: 'operacional' },
+  { id: 'tarefas',    label: 'Tarefas',     icon: ClipboardList,   group: 'operacional' },
+  { id: 'atividade',  label: 'Atividade',   icon: Activity,        group: 'operacional' },
   { id: 'workflow',   label: 'Workflow',    icon: GitBranch,       group: 'referencia' },
   { id: 'templates',  label: 'Templates',   icon: FileText,        group: 'referencia' },
   { id: 'automacao',  label: 'Automação',   icon: Zap,             group: 'referencia' },
@@ -58,7 +62,15 @@ function NavItem({ item, active, onNavigate }) {
 
 export function Sidebar({ active, onNavigate, onLogout }) {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const { role, profile, canView } = useAuth();
+  const [claiming, setClaiming] = useState(false);
+  const { role, profile, canView, claimGestor } = useAuth();
+
+  async function handleClaimGestor() {
+    setClaiming(true);
+    const ok = await claimGestor();
+    setClaiming(false);
+    if (!ok) alert('Erro ao atualizar perfil. Verifique o console.');
+  }
 
   const visibleItems = MENU_ITEMS.filter(m => canView(m.id));
   const operacional = visibleItems.filter(m => m.group === 'operacional');
@@ -127,6 +139,22 @@ export function Sidebar({ active, onNavigate, onLogout }) {
               </div>
             </div>
           </div>
+        )}
+        {role !== 'gestor' && (
+          <button
+            onClick={handleClaimGestor}
+            disabled={claiming}
+            style={{
+              width: '100%', padding: '8px 20px', border: 'none', cursor: claiming ? 'wait' : 'pointer',
+              background: 'rgba(193,127,36,0.12)', color: ACCENT,
+              display: 'flex', alignItems: 'center', gap: '8px',
+              fontSize: '12px', fontWeight: 600, transition: 'all 0.15s',
+            }}
+            title="Clique para assumir como Gestor (dono do sistema)"
+          >
+            <GraduationCap size={14} />
+            {claiming ? 'Atualizando…' : 'Assumir como Gestor'}
+          </button>
         )}
         <button
           onClick={onLogout}

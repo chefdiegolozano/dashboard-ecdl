@@ -50,6 +50,19 @@ export function AuthProvider({ children }) {
 
   const role = profile?.role || 'editor';
 
+  async function claimGestor() {
+    if (!profile?.id) return false;
+    const { error } = await supabase
+      .from('profiles')
+      .update({ role: 'gestor' })
+      .eq('id', profile.id);
+    if (!error) {
+      setProfile(p => ({ ...p, role: 'gestor' }));
+      return true;
+    }
+    return false;
+  }
+
   return (
     <AuthContext.Provider value={{
       session,
@@ -60,6 +73,7 @@ export function AuthProvider({ children }) {
       canEdit: (section) => canEdit(role, section),
       firstSection: () => firstAllowedSection(role),
       signOut: () => supabase.auth.signOut(),
+      claimGestor,
     }}>
       {children}
     </AuthContext.Provider>
